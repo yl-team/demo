@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <style type="text/css" scoped>
+        body {
+            background: #4D4948;
+        }
+        
+        .chat-container {
+            width: 580px;
+        }
+        
+        .chat-record {}
+        
+        .chat-record {
+            position: relative;
+            overflow: auto;
+            zoom: 1;
+            margin: 4px 0 2px 0;
+        }
+        
+        .chat-record .chat-body {
+            position: relative;
+            /*width: 100%-156px;*/
+            min-width: 180px;
+            max-width:480px;
+            min-height: 35px;
+            background: #F8C301;
+            border-radius: 5px;
+            /* 圆角 */
+            margin: 2px auto 0;
+            padding: 5px;
+        }
+        
+        .chat-record .chat-body .arrow {
+            position: absolute;
+            /* 圆角的位置需要细心调试 */
+            width: 0;
+            height: 0;
+            font-size: 0;
+            border: solid 8px;
+        }
+        
+        .chat-record .chat-person {
+            margin-top: 2px;
+            height: 48px;
+            width: 48px;
+            /*background: #EEE;*/
+            border-radius: 4px;
+        }
+        
+        .chat-left .chat-person {
+            float: left;
+        }
+        
+        .chat-left .chat-body {
+            margin-left: 16px;
+            float: left;
+        }
+        
+        .chat-left .chat-body .arrow {
+            top: 9px;
+            left: -16px;
+            border-color: #4D4948 #F8C301 #4D4948 #4D4948;
+        }
+        /*right*/
+        
+        .chat-right .chat-person {
+            float: right;
+        }
+        
+        .chat-right .chat-body {
+            margin-right: 16px;
+            float: right;
+        }
+        
+        .chat-right .chat-body .arrow {
+            top: 9px;
+            right: -16px;
+            border-color: #4D4948 #4D4948 #4D4948 #F8C301;
+        }
+        .chat-right-append .chat-body{
+            /*float:none;*/
+            margin-right: 64px ;
+            margin-top: 0px;
+        }
+
+        .chat-person{
+        	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAAAvCAYAAABzJ5OsAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QA/wD/AP+gvaeTAAAAB3RJTUUH3gseFQUcUG0P0wAAArxJREFUaN7tmM9qE1EUh787mUnSZNLaxNqQUtsqFEQLCrpw4da36Cv4FoJufYi+hVsFwY2CItVibaiaUJv+Tdokc12cGStWm8zMTdPI/CAEMjPMd879nXPPjVpe0Y+BR4DL6GgfeKaWV/TeiIH/CsAaUXAA1xo2QRwl8Al8Aj9CSuD/O3gNaC3fg5JtHFqDnYIxB2wFHnDUgVZHrquLCq8UzE/CrTKUcpCyJJjDNnzagnff4aBtLgBj8ApYKsP9Ocjavl18zxSyMO1CZRyef4T9YzMBGPG81nDZhXuzkLHB0yd+/93780W4OW0u88YK9loR8mkBPUuLU+BmzBSyEfi0DTPjvTOqNYxnoDjWO8hzgdca3DRM9AlkW1DMXRDPOym4OysB9JvMpTKU8vGzHwteI52lUpA22e8zhSzknPi+jwWvgGYH6gf920Ahm9ahgX4f2zadLrz9Brut/mA8LZvVdrP/1RoYvFLwZRtebQjYmS9TsLEDr6u97z0XeIkA1hvQaJ2dza4Hq3WZcy5Et/HZ2TuCN1/B8/7xIgWbu7D2I75djMIHAbyvwYf63681WvByHZoGBzMzsw3Ss5v+9HjKzwqqDdjcO7nXhCJPlVrL8jspGcZyDhQycLsCKfVHD9cylN2pQG0fDo7F9+2u1AEq2mpEgrcUzBXhegkuZWUgy9gSyClwYSfnwIMF6Hh+nz+WOqnuiNWaEYo4NLzWcHUSHi7K7hr8FgD3coRtgZOWyXK6IAnIZ+DF5whJDPuAk5KTUtaf270I59TA90Ft3LgCU274WggFr7Vka2bCzCYTBJJPywqEVSh4peTQkbXFnyY/C5P+YSYETyjPKyUFttMy1+4CRVnJUPBaw9rW4P6LsUK2zNDdRkXsyQMJdtgACfwoKoFP4BP4EZIFNIYNEVENC3gK1IZNElI14MlPoGfaE1z/kFoAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTYtMDktMTdUMTU6MjE6MjQrMDg6MDDoxCC/AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE0LTExLTMwVDIxOjA1OjI4KzA4OjAw2DUjcAAAAE10RVh0c29mdHdhcmUASW1hZ2VNYWdpY2sgNy4wLjEtNiBRMTYgeDg2XzY0IDIwMTYtMDktMTcgaHR0cDovL3d3dy5pbWFnZW1hZ2ljay5vcmfd2aVOAAAAGHRFWHRUaHVtYjo6RG9jdW1lbnQ6OlBhZ2VzADGn/7svAAAAGHRFWHRUaHVtYjo6SW1hZ2U6OkhlaWdodAA2NjFbgyqlAAAAF3RFWHRUaHVtYjo6SW1hZ2U6OldpZHRoADY2ML91Sm4AAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RFWHRUaHVtYjo6TVRpbWUAMTQxNzM1MjcyOPgroJUAAAASdEVYdFRodW1iOjpTaXplADkuMjhLQpdxQLkAAABfdEVYdFRodW1iOjpVUkkAZmlsZTovLy9ob21lL3d3d3Jvb3Qvc2l0ZS93d3cuZWFzeWljb24ubmV0L2Nkbi1pbWcuZWFzeWljb24uY24vc3JjLzExODA4LzExODA4NzgucG5n+iC7zQAAAABJRU5ErkJggg==')
+        }
+
+        .chat-input-container{
+
+        }
+
+        .chat-input-container .chat-input{
+        	float:left;
+        }
+        .chat-input-container .chat-input textarea{
+        	padding: 2px;
+        	border-radius: 4px;
+        	width:450px;
+        	max-width: 450px;
+        	min-width: 450px;
+        	row: 2;
+        	max-height: 10em;
+        }
+        .chat-input-container .chat-submit{
+        	float: left;
+        	margin-left: 10px;
+        }
+    </style>
+
+
+    <ul class="chat-container">
+
+        <li class="chat-record chat-left">
+            <div class="chat-person">
+                
+            </div>
+            <div class="chat-body">
+                <div class="arrow"></div>
+                <div class="content">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus accusamus dolorum, facere quod, cumque nobis, nihil illo
+                    neque reprehenderit ea nam delectus quos deleniti aliquid molestiae excepturi sed earum eveniet!
+                </div>
+            </div>
+
+        </li>
+
+
+        <li class="chat-record chat-right">
+            <div class="chat-person">
+                
+            </div>
+            <div class="chat-body">
+                <div class="arrow"></div>
+                <div class="content">
+                    Lorem ipsum dolor sit amet
+                </div>
+            </div>
+
+        </li>
+
+        <li class="chat-record chat-right chat-right-append">
+
+            <div class="chat-body">
+                <div class="content">
+                    Lorem ipsum dolor sit amet
+                </div>
+            </div>
+
+        </li>
+
+
+        <li class="chat-record chat-left">
+            <div class="chat-person">
+                
+            </div>
+            <div class="chat-body">
+                <div class="arrow"></div>
+                <div class="content">
+                    Lorem ipsum dolor sit amet
+                </div>
+            </div>
+
+        </li>
+
+    </ul>
+
+
+
+    <div class="chat-input-container">
+    	
+    	<div class="chat-input">
+    		<textarea id="chat_content">
+    		</textarea>
+    	</div>
+
+    	<div class="chat-submit">
+    		<button id="chat_ubmit">chat-body</button>
+    	</div>
+
+    </div>
+
+</body>
+
+</html>
